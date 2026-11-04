@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 480px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; color: #333; }
+    .header { background: #06c755; color: white; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+    .header h1 { font-size: 15px; font-weight: 600; }
+    .section { padding: 12px 16px; }
+    .section-title { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500; transition: background 0.15s; }
+    .btn-primary { background: #06c755; color: white; }
+    .btn-primary:hover { background: #05b34c; }
+    .btn-secondary { background: #e9ecef; color: #555; }
+    .btn-secondary:hover { background: #dee2e6; }
+    .btn-danger { background: #ff4757; color: white; font-size: 11px; padding: 4px 8px; }
+    .btn-danger:hover { background: #e03e4e; }
+    .btn-sm { padding: 4px 10px; font-size: 11px; }
+    .actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #eee; }
+    .stamp-count-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .stamp-count-row label { font-size: 13px; color: #555; }
+    .stamp-count-row input { width: 60px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; text-align: center; }
+    .stamp-list { max-height: 400px; overflow-y: auto; }
+    .stamp-item { background: white; border: 1px solid #e9ecef; border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; }
+    .stamp-item .stamp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .stamp-item .num { font-weight: 700; color: #06c755; font-size: 13px; }
+    .stamp-item .tag-count { font-size: 11px; color: #aaa; }
+    .stamp-item .selected-tags { min-height: 24px; }
+    .stamp-item .selected-tags .tag-chip { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 7px; border-radius: 10px; margin: 2px 2px 0 0; font-size: 11px; cursor: pointer; }
+    .stamp-item .selected-tags .tag-chip:hover { background: #ffcdd2; color: #c62828; text-decoration: line-through; }
+    .stamp-item .tag-picker-btn { font-size: 11px; color: #06c755; cursor: pointer; background: none; border: 1px dashed #06c755; border-radius: 10px; padding: 2px 8px; margin-top: 4px; }
+    .stamp-item .tag-picker-btn:hover { background: #e8f5e9; }
+    .empty-state { text-align: center; padding: 20px; color: #aaa; font-size: 13px; }
+    .tab-bar { display: flex; border-bottom: 1px solid #eee; background: white; }
+    .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; }
+    .tab.active { color: #06c755; border-bottom-color: #06c755; font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .import-export { padding: 12px 16px; }
+    .import-export textarea { width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-size: 12px; font-family: monospace; resize: vertical; }
+    .import-export textarea:focus { outline: none; border-color: #06c755; }
+    .ie-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .status { padding: 8px 16px; font-size: 12px; color: #06c755; text-align: center; display: none; }
+    .status.error { color: #ff4757; }
+
+    /* Drop zone */
+    .drop-zone { border: 2px dashed #ccc; border-radius: 10px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: white; }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: #06c755; background: #f0fff4; }
+    .drop-zone-icon { font-size: 28px; margin-bottom: 6px; }
+    .drop-zone-text { font-size: 13px; font-weight: 600; color: #555; }
+    .drop-zone-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .file-label { color: #06c755; cursor: pointer; text-decoration: underline; }
+
+    /* Tag picker modal */
+    .tag-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 1000; }
+    .tag-modal-overlay.active { display: flex; align-items: center; justify-content: center; }
+    .tag-modal { background: white; border-radius: 12px; width: 440px; max-height: 450px; overflow: hidden; display: flex; flex-direction: column; }
+    .tag-modal-header { padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .tag-modal-header h3 { font-size: 14px; }
+    .tag-modal-search { padding: 8px 16px; }
+    .tag-modal-search input { width: 100%; padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+    .tag-modal-search input:focus { outline: none; border-color: #06c755; }
+    .tag-modal-body { padding: 8px 16px; overflow-y: auto; flex: 1; }
+    .tag-modal-body .tag-option { display: inline-block; padding: 3px 10px; margin: 2px; border-radius: 12px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; background: white; transition: all 0.1s; }
+    .tag-modal-body .tag-option:hover { border-color: #06c755; background: #f0fff4; }
+    .tag-modal-body .tag-option.selected { background: #06c755; color: white; border-color: #06c755; }
+    .tag-modal-body .tag-option.disabled { opacity: 0.4; cursor: not-allowed; }
+    .tag-modal-footer { padding: 10px 16px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 8px; }
+
+    .scan-info { padding: 8px 16px; font-size: 12px; color: #888; background: #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+    .mode-toggle { display: flex; gap: 0; background: rgba(255,255,255,0.2); border-radius: 6px; overflow: hidden; }
+    .mode-toggle button { padding: 4px 12px; border: none; background: none; color: rgba(255,255,255,0.7); font-size: 12px; cursor: pointer; font-weight: 500; }
+    .mode-toggle button.active { background: white; color: #06c755; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span id="headerIcon">🏷️</span>
+    <h1 id="headerTitle">LINE Stamp Tag Helper</h1>
+    <div class="mode-toggle" style="margin-left:auto">
+      <button id="modeStamp" class="active">スタンプ</button>
+      <button id="modeEmoji">絵文字</button>
+    </div>
+  </div>
+
+  <div class="scan-info">
+    <span>608個のタグ内蔵（11カテゴリ）</span>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" data-tab="edit">タグ編集</div>
+    <div class="tab" data-tab="list">一覧</div>
+    <div class="tab" data-tab="io">入出力</div>
+  </div>
+
+  <div id="status" class="status"></div>
+
+  <!-- Edit Tab -->
+  <div class="tab-content active" data-tab="edit">
+    <div class="section">
+      <div class="stamp-count-row">
+        <label>スタンプ数:</label>
+        <input type="number" id="stampCount" min="1" max="40" value="8">
+        <button class="btn btn-primary" id="generateBtn">生成</button>
+      </div>
+      <div class="stamp-list" id="stampList"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="saveBtn" style="flex:1">保存</button>
+      <button class="btn btn-danger" id="clearBtn">全削除</button>
+    </div>
+  </div>
+
+  <!-- List Tab -->
+  <div class="tab-content" data-tab="list">
+    <div class="section">
+      <div class="section-title">保存済みタグ一覧</div>
+      <div id="savedList" class="stamp-list"></div>
+    </div>
+  </div>
+
+  <!-- Import/Export Tab -->
+  <div class="tab-content" data-tab="io">
+    <div class="import-export">
+      <div class="section-title">ファイル取り込み（D&D対応）</div>
+      <div id="dropZone" class="drop-zone">
+        <div class="drop-zone-icon">📁</div>
+        <div class="drop-zone-text">ファイルをドラッグ＆ドロップ</div>
+        <div class="drop-zone-sub">.txt .md .csv .json に対応</div>
+        <div class="drop-zone-sub">または<label class="file-label"><input type="file" id="fileInput" accept=".txt,.md,.csv,.json" hidden>ファイルを選択</label></div>
+      </div>
+      <div id="importResult" style="font-size:11px;color:#888;margin-top:6px;"></div>
+
+      <div class="section-title" style="margin-top:14px">テキスト貼り付けで取り込み</div>
+      <textarea id="bungenText" rows="5" placeholder="マークダウンテーブルやCSVテキストを貼り付け&#10;「No」「LINEタグ/タグ」列が必要です"></textarea>
+      <div class="ie-actions">
+        <button class="btn btn-primary" id="importBungenBtn" style="flex:1">テキストから取り込み</button>
+      </div>
+
+      <div class="section-title" style="margin-top:14px">JSON入出力</div>
+      <textarea id="ioText" placeholder='{"1": ["おはよう", "あいさつ", "朝"], "2": ["ありがとう", "感謝"]}'></textarea>
+      <div class="ie-actions">
+        <button class="btn btn-secondary" id="exportBtn" style="flex:1">エクスポート</button>
+        <button class="btn btn-primary" id="importBtn" style="flex:1">インポート</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tag picker modal -->
+  <div class="tag-modal-overlay" id="tagModal">
+    <div class="tag-modal">
+      <div class="tag-modal-header">
+        <h3>タグ選択 - スタンプ #<span id="modalStampNum"></span> (<span id="modalCount">0</span>/9)</h3>
+        <button class="btn btn-sm btn-secondary" id="modalClose">閉じる</button>
+      </div>
+      <div class="tag-modal-search">
+        <div style="display:flex;gap:6px">
+          <select id="catFilter" style="padding:6px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+            <option value="all">すべて</option>
+            <option value="会話">会話</option>
+            <option value="表現">表現</option>
+            <option value="感情">感情</option>
+            <option value="行動">行動</option>
+            <option value="春">春</option>
+            <option value="夏">夏</option>
+            <option value="秋">秋</option>
+            <option value="冬">冬</option>
+            <option value="年末年始">年末年始</option>
+            <option value="動物">動物</option>
+            <option value="その他">その他</option>
+          </select>
+          <input type="text" id="tagSearch" placeholder="タグを検索..." style="flex:1">
+        </div>
+      </div>
+      <div class="tag-modal-body" id="tagOptions"></div>
+      <div class="tag-modal-footer">
+        <button class="btn btn-primary" id="modalDone">完了</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

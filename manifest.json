@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "LINE Stamp Tag Helper",
+  "version": "1.0.0",
+  "description": "LINE Creators Marketのスタンプタグを半自動で設定するツール",
+  "permissions": ["storage"],
+  "host_permissions": ["https://creator.line.me/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://creator.line.me/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon48.png"
+    }
+  },
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

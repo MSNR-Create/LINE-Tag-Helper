@@ -1,0 +1,138 @@
+#lst-helper-panel {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  z-index: 99999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+.lst-header {
+  background: #06c755;
+  color: white;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: move;
+}
+
+.lst-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.8;
+}
+.lst-close:hover { opacity: 1; }
+
+.lst-body {
+  padding: 12px 14px;
+}
+
+.lst-info {
+  margin-bottom: 8px;
+}
+
+.lst-stamp-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+}
+
+.lst-tags-preview {
+  min-height: 28px;
+  margin-bottom: 10px;
+}
+
+.lst-tag-chip {
+  display: inline-block;
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin: 2px 4px 2px 0;
+}
+
+.lst-no-tags {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.lst-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lst-mode {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  background: white;
+}
+
+.lst-apply-btn {
+  padding: 6px 16px;
+  background: #06c755;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lst-apply-btn:hover { background: #05b34c; }
+.lst-apply-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+.lst-interval-row {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #555;
+}
+.lst-interval {
+  width: 60px;
+  padding: 3px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.lst-apply-all-row {
+  margin-bottom: 8px;
+}
+
+.lst-apply-all-btn {
+  width: 100%;
+  padding: 7px;
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lst-apply-all-btn:hover { background: #e0e0e0; }
+.lst-apply-all-btn:disabled { color: #aaa; cursor: not-allowed; }
+
+.lst-result {
+  font-size: 12px;
+  min-height: 16px;
+  color: #06c755;
+  white-space: pre-line;
+}
